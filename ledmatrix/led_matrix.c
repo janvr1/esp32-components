@@ -41,6 +41,11 @@ esp_err_t lm_init(led_matrix_t *lm,
 
     // lm->frame = heap_caps_calloc(3 * 32, sizeof(uint64_t), MALLOC_CAP_INTERNAL);
     lm->frame = malloc(3 * 32 * sizeof(uint64_t));
+    if (lm->frame == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to allocate memory for framebuffer");
+        abort();
+    }
     lm_clear_frame(lm);
     lm->line_A = A;
     lm->line_B = B;
