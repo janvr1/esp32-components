@@ -8,9 +8,9 @@
 
 typedef enum lm_color
 {
-    LM_COLOR_RED = 4,
-    LM_COLOR_GREEN = 2,
-    LM_COLOR_BLUE = 0,
+    LM_COLOR_RED = 0,
+    LM_COLOR_GREEN = 1,
+    LM_COLOR_BLUE = 2,
 } lm_color_t;
 
 typedef struct led_matrix

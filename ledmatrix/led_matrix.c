@@ -134,10 +134,9 @@ esp_err_t lm_init(led_matrix_t *lm,
 void lm_set_pixel(led_matrix_t *lm, int val, int x, int y, lm_color_t c)
 {
     lm->ready = false;
-    uint16_t offset = 1 + 6 * (y % 16) - y / 16 + c;
-    uint64_t *row = lm->frame + offset;     // Address of the line (uint64_t) this pixel belongs to
-    uint8_t *byte = (uint8_t *)row + x / 8; // Address of the byte this pixel belongs to
-    uint8_t shift = 7 - x % 8;              // Bit shift needed to put the pixel in proper positon inside the byte
+    uint64_t *row = lm->frame + lm_get_row_offset(y, c); // Address of the line (uint64_t) this pixel belongs to
+    uint8_t *byte = (uint8_t *)row + x / 8;              // Address of the byte this pixel belongs to
+    uint8_t shift = 7 - x % 8;                           // Bit shift needed to put the pixel in proper positon inside the byte
     if (val)
         *byte |= 1 << shift; // Set the bit
     else
@@ -147,7 +146,8 @@ void lm_set_pixel(led_matrix_t *lm, int val, int x, int y, lm_color_t c)
 
 uint16_t lm_get_row_offset(int r, lm_color_t color)
 {
-    return 1 + 6 * (r % 16) - r / 16 + color;
+    // return 1 + 6 * (r % 16) - r / 16 + color;
+    return 6 * (r % 16) + color + 3 * (r / 16);
 }
 
 void lm_draw_char(led_matrix_t *lm, unsigned char chr, int pos, int row, lm_color_t c)
