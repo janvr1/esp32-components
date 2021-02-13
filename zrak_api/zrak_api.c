@@ -44,7 +44,7 @@ void http_task(void *pvParameters)
     cJSON_AddNumberToObject(json, "p", round(params->p / 100));
     cJSON_AddNumberToObject(json, "Ev", round(params->E * 10) / 10);
 
-    const char *post_data = cJSON_Print(json);
+    char *post_data = cJSON_Print(json);
 
     ret = esp_http_client_set_post_field(client, post_data, strlen(post_data));
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
@@ -54,6 +54,8 @@ void http_task(void *pvParameters)
 
     ret = esp_http_client_cleanup(client);
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
+    cJSON_Delete(json);
+    free(post_data);
     free(params);
     vTaskDelete(NULL);
 }
