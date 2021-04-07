@@ -112,7 +112,7 @@ esp_err_t lm_init(led_matrix_t *lm,
     spi_device_interface_config_t devcfg = {
         .command_bits = 0,
         .address_bits = 0,
-        .clock_speed_hz = SPI_MASTER_FREQ_40M, //Clock out at 40 MHz
+        .clock_speed_hz = SPI_MASTER_FREQ_26M, //Clock out at 40 MHz
         .mode = 0,                             //SPI mode 0
         .spics_io_num = -1,
         .queue_size = 16,
