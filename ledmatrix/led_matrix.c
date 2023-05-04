@@ -112,7 +112,7 @@ esp_err_t lm_init(led_matrix_t *lm,
     spi_device_interface_config_t devcfg = {
         .command_bits = 0,
         .address_bits = 0,
-        .clock_speed_hz = SPI_MASTER_FREQ_40M, //Clock out at 40 MHz
+        .clock_speed_hz = SPI_MASTER_FREQ_26M, //Clock out at 40 MHz
         .mode = 0,                             //SPI mode 0
         .spics_io_num = -1,
         .queue_size = 16,
@@ -165,7 +165,7 @@ esp_err_t lm_draw_text(led_matrix_t *lm, char *text, int pos, int row, lm_color_
 {
     if (pos > 7 || row > 3)
     {
-        ESP_LOGE(TAG, "Text placement out of range: row=%d, pos=%d", row, pos);
+        ESP_LOGE(TAG, "Text placement out of range: row=%"PRIi16", pos=%"PRIi16"", row, pos);
         return ESP_FAIL;
     }
     while (!lm->ready)
@@ -218,7 +218,7 @@ esp_err_t lm_draw_text_xy(led_matrix_t *lm, char *text, int x, int y, lm_color_t
 {
     if (y > 24 || x > 56)
     {
-        ESP_LOGE(TAG, "Text placement out of range: x=%d, y=%d", x, y);
+        ESP_LOGE(TAG, "Text placement out of range: x=%"PRIi16", y=%"PRIi16"", x, y);
         return ESP_FAIL;
     }
     while (!lm->ready)

@@ -40,7 +40,7 @@ esp_err_t scd30_begin(scd30_dev_t *scd, i2c_port_t i2c_port, uint16_t interval, 
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
     if (ret != ESP_OK)
         return ret;
-    ESP_LOGD(TAG, "SCD30 firmware version %d.%d", scd_fw.major, scd_fw.minor);
+    ESP_LOGD(TAG, "SCD30 firmware version %"PRIi16".%"PRIi16"", scd_fw.major, scd_fw.minor);
 
     ret = scd30_set_interval(scd, interval);
 
@@ -110,7 +110,7 @@ int16_t scd30_get_interval(scd30_dev_t *scd)
         return -1;
     }
     uint16_t interval = ((uint16_t)data[0] << 8) | data[1];
-    // ESP_LOGI(TAG, "Received interval %d", interval);
+    // ESP_LOGI(TAG, "Received interval %"PRIu32"", interval);
     if (data[2] != scd30_crc(data, 2))
     {
         ESP_LOGE(TAG, "CRC mismatch in get interval. Received: 0x%02x, calculated: 0x%02x", data[2], scd30_crc(data, 2));
@@ -164,7 +164,7 @@ esp_err_t scd30_read_measurement(scd30_dev_t *scd)
     {
         if (data[x] != scd30_crc(&data[x - 2], 2))
         {
-            ESP_LOGE(TAG, "CRC mismatch in read measurement at position %d. Received: 0x%02x, calculated: 0x%02x", x, data[x], scd30_crc(&data[x - 2], 2));
+            ESP_LOGE(TAG, "CRC mismatch in read measurement at position %"PRIi16". Received: 0x%02x, calculated: 0x%02x", x, data[x], scd30_crc(&data[x - 2], 2));
             return ESP_FAIL;
         }
     }
@@ -181,9 +181,9 @@ esp_err_t scd30_read_measurement(scd30_dev_t *scd)
                                    ((uint32_t)data[15] << 8) |
                                    ((uint32_t)data[16]));
 
-    ESP_LOGD(TAG, "Integer temperature: %u", t_int);
-    ESP_LOGD(TAG, "Integer humidity: %u", humi_int);
-    ESP_LOGD(TAG, "Integer CO2: %u", co2_int);
+    ESP_LOGD(TAG, "Integer temperature: %"PRIu32"", t_int);
+    ESP_LOGD(TAG, "Integer humidity: %"PRIu32"", humi_int);
+    ESP_LOGD(TAG, "Integer CO2: %"PRIu32"", co2_int);
 
     scd->temperature = *(float *)&t_int;
     scd->humidity = *(float *)&humi_int;
@@ -314,7 +314,7 @@ float scd30_get_temp_offset(scd30_dev_t *scd)
         return -1;
     }
     uint16_t offset = (uint16_t)((uint16_t)data[0] << 8 | (uint16_t)data[1]);
-    ESP_LOGD(TAG, "Read temperature offset %d (int)", offset);
+    ESP_LOGD(TAG, "Read temperature offset %"PRIi16" (int)", offset);
     return (float)offset / 100.0;
 }
 
@@ -386,11 +386,11 @@ void scd30_print_config(scd30_dev_t *scd)
     uint16_t frc = scd30_get_frc(scd);
     uint16_t altitude = scd30_get_altitude_comp(scd);
     ESP_LOGI(TAG, "******** Begin Sensirion SCD30 config ********");
-    ESP_LOGI(TAG, "Measurement interval: %d s", interval);
+    ESP_LOGI(TAG, "Measurement interval: %"PRIi16" s", interval);
     ESP_LOGI(TAG, "Temperature offset: %f °C", t_off);
-    ESP_LOGI(TAG, "Alititude compensation: %d m", altitude);
-    ESP_LOGI(TAG, "Automatic Self Calibration: %d", asc);
-    ESP_LOGI(TAG, "Forced Recalibration Value: %d", frc);
+    ESP_LOGI(TAG, "Alititude compensation: %"PRIi16" m", altitude);
+    ESP_LOGI(TAG, "Automatic Self Calibration: %"PRIi16"", asc);
+    ESP_LOGI(TAG, "Forced Recalibration Value: %"PRIi16"", frc);
     ESP_LOGI(TAG, "******** End Sensirion SCD30 config ********");
 }
 
@@ -424,7 +424,7 @@ esp_err_t scd30_write(scd30_dev_t *scd, uint16_t scd_cmd, void *data, size_t siz
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
     if (ret != ESP_OK)
     {
-        ESP_LOGE(TAG, "Error writing command 0x%04x, data size: %d", scd_cmd, size);
+        ESP_LOGE(TAG, "Error writing command 0x%04x, data size: %"PRIu16"", scd_cmd, size);
     }
     i2c_cmd_link_delete(cmd);
     return ret;
@@ -443,7 +443,7 @@ esp_err_t scd30_read(scd30_dev_t *scd, void *data, size_t size)
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
     if (ret != ESP_OK)
     {
-        ESP_LOGE(TAG, "Error reading from SCD30 data size: %d", size);
+        ESP_LOGE(TAG, "Error reading from SCD30 data size: %"PRIu16"", size);
     }
     i2c_cmd_link_delete(cmd);
     return ret;
