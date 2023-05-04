@@ -94,7 +94,7 @@ esp_err_t veml7700_set_params(veml7700_dev_t *veml, veml7700_gain_t gain, veml77
     }
     vTaskDelay(5 / portTICK_PERIOD_MS);
 
-    ESP_LOGI(TAG, "Successfully set gain: %f, integration: %d ms", veml7700_gain_to_value(veml->als_conf.als_gain), veml7700_integration_to_value(veml->als_conf.als_it));
+    ESP_LOGI(TAG, "Successfully set gain: %f, integration: %"PRIu16" ms", veml7700_gain_to_value(veml->als_conf.als_gain), veml7700_integration_to_value(veml->als_conf.als_it));
     return ret;
 }
 
@@ -108,13 +108,13 @@ esp_err_t veml7700_read_als(veml7700_dev_t *veml)
         ESP_LOGE(TAG, "Error reading ALS data");
         return ret;
     }
-    ESP_LOGD(TAG, "Read ALS raw data: %d", data);
+    ESP_LOGD(TAG, "Read ALS raw data: %"PRIu16"", data);
     veml->als = veml7700_calculate_lux(veml, data);
     ESP_LOGI(TAG, "");
     ESP_LOGI(TAG, "******** Begin Vishay VEML7700 measurement ********");
     ESP_LOGI(TAG, "ALS: %f lux", veml->als);
     ESP_LOGI(TAG, "Gain: %f", veml7700_gain_to_value(veml->als_conf.als_gain));
-    ESP_LOGI(TAG, "Integration time: %d ms", veml7700_integration_to_value(veml->als_conf.als_it));
+    ESP_LOGI(TAG, "Integration time: %"PRIu16" ms", veml7700_integration_to_value(veml->als_conf.als_it));
     ESP_LOGI(TAG, "******** End Vishay VEML7700 measurement ********");
     ESP_LOGI(TAG, "");
     if (veml->auto_parameters)
@@ -166,7 +166,7 @@ float veml7700_calculate_lux(veml7700_dev_t *veml, uint16_t data)
     uint16_t it = veml7700_integration_to_value(veml->als_conf.als_it);
     float g = veml7700_gain_to_value(veml->als_conf.als_gain);
     float r = 5.76 / (g * it);
-    ESP_LOGD(TAG, "Calculating lux value with g=%f (%d), it=%d (%d), r=%f, raw_data=%d", g, veml->als_conf.als_gain, it, veml->als_conf.als_it, r, data);
+    ESP_LOGD(TAG, "Calculating lux value with g=%f (%"PRIu16"), it=%"PRIu16" (%"PRIu16"), r=%f, raw_data=%"PRIu16"", g, veml->als_conf.als_gain, it, veml->als_conf.als_it, r, data);
     float lux = r * (float)data;
     if (((veml->als_conf.als_gain == VEML_GAIN_x1_8) || (veml->als_conf.als_gain == VEML_GAIN_x1_4)) && lux > 1000)
     {
@@ -278,7 +278,7 @@ esp_err_t veml7700_auto_parameters(veml7700_dev_t *veml, uint16_t raw_data)
                     return ret;
                 }
                 else
-                    ESP_LOGD(TAG, "AutoParameters incremented integration time to %d", veml7700_integration_to_value(veml->als_conf.als_it));
+                    ESP_LOGD(TAG, "AutoParameters incremented integration time to %"PRIu16"", veml7700_integration_to_value(veml->als_conf.als_it));
             }
             else
             {
@@ -338,7 +338,7 @@ esp_err_t veml7700_auto_parameters(veml7700_dev_t *veml, uint16_t raw_data)
                     return ret;
                 }
                 else
-                    ESP_LOGD(TAG, "AutoParameters decremented integration time to %d", veml7700_integration_to_value(veml->als_conf.als_it));
+                    ESP_LOGD(TAG, "AutoParameters decremented integration time to %"PRIu16"", veml7700_integration_to_value(veml->als_conf.als_it));
             }
             else
             {
@@ -368,7 +368,7 @@ veml7700_gain_t veml7700_gain_inc_dec(veml7700_gain_t g, int8_t inc_dec)
             return VEML_GAIN_x2;
             break;
         default:
-            ESP_LOGW(TAG, "Unknown gain value %d", g);
+            ESP_LOGW(TAG, "Unknown gain value %"PRIu16"", g);
             return g;
             break;
         };
@@ -391,7 +391,7 @@ veml7700_gain_t veml7700_gain_inc_dec(veml7700_gain_t g, int8_t inc_dec)
             return VEML_GAIN_x1;
             break;
         default:
-            ESP_LOGW(TAG, "Unknown gain value %d", g);
+            ESP_LOGW(TAG, "Unknown gain value %"PRIu16"", g);
             return g;
             break;
         }
@@ -425,7 +425,7 @@ veml7700_integration_t veml7700_integration_inc_dec(veml7700_integration_t it, i
             return VEML_IT_800_MS;
             break;
         default:
-            ESP_LOGW(TAG, "Unknown integration value %d", it);
+            ESP_LOGW(TAG, "Unknown integration value %"PRIu16"", it);
             return it;
             break;
         }
@@ -453,7 +453,7 @@ veml7700_integration_t veml7700_integration_inc_dec(veml7700_integration_t it, i
             return VEML_IT_400_MS;
             break;
         default:
-            ESP_LOGW(TAG, "Unknown integration value %d", it);
+            ESP_LOGW(TAG, "Unknown integration value %"PRIu16"", it);
             return it;
             break;
         }
@@ -480,7 +480,7 @@ float veml7700_gain_to_value(veml7700_gain_t gain)
         return 2;
         break;
     default:
-        ESP_LOGW(TAG, "Unknown gain value %d", gain);
+        ESP_LOGW(TAG, "Unknown gain value %"PRIu16"", gain);
         return 0.0;
         break;
     };
@@ -508,7 +508,7 @@ uint16_t veml7700_integration_to_value(veml7700_integration_t integration)
         return 800;
         break;
     default:
-        ESP_LOGW(TAG, "Unknown integration value %d", integration);
+        ESP_LOGW(TAG, "Unknown integration value %"PRIu16"", integration);
         return 0.0;
         break;
     };

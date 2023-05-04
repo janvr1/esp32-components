@@ -91,12 +91,12 @@ esp_err_t bme280_check_chip_id(bme280_dev_t *bme)
     }
     if (chip_id == 0x60)
     {
-        ESP_LOGD(TAG, "Correct chip ID: 0x%02x", chip_id);
+        ESP_LOGD(TAG, "Correct chip ID: 0x%02"PRIi16"", chip_id);
         return ESP_OK;
     }
     else
     {
-        ESP_LOGE(TAG, "Wrong chip ID: 0x%02x", chip_id);
+        ESP_LOGE(TAG, "Wrong chip ID: 0x%02"PRIi16"", chip_id);
         return ESP_FAIL;
     }
 }
@@ -318,25 +318,25 @@ esp_err_t bme280_measurement(bme280_dev_t *bme)
         return ret;
 
     adc_pres = data[0] << 12 | data[1] << 4 | data[2] >> 4;
-    ESP_LOGD(TAG, "Read ADC pressure: %d", adc_pres);
+    ESP_LOGD(TAG, "Read ADC pressure: %"PRIu32"", adc_pres);
 
     adc_temp = data[3] << 12 | data[4] << 4 | data[5] >> 4;
-    ESP_LOGD(TAG, "Read ADC temperature: %d", adc_temp);
+    ESP_LOGD(TAG, "Read ADC temperature: %"PRIu32"", adc_temp);
 
     adc_humi = data[6] << 8 | data[7];
-    ESP_LOGD(TAG, "Read ADC humidity: %d", adc_humi);
+    ESP_LOGD(TAG, "Read ADC humidity: %"PRIu32"", adc_humi);
 
     uint32_t temp_fixed = bme280_compensate_temp(bme, adc_temp, &t_fine);
-    ESP_LOGD(TAG, "Read fixed temperature: %d ", temp_fixed);
-    ESP_LOGD(TAG, "Read t_fine=%d", t_fine);
+    ESP_LOGD(TAG, "Read fixed temperature: %"PRIu32" ", temp_fixed);
+    ESP_LOGD(TAG, "Read t_fine=%"PRIu32"", t_fine);
     bme->temperature = (float)temp_fixed / 100.00;
 
     uint32_t pres_fixed = bme280_compensate_pres(bme, adc_pres, t_fine);
-    ESP_LOGD(TAG, "Read fixed pressure: %d", pres_fixed);
+    ESP_LOGD(TAG, "Read fixed pressure: %"PRIu32"", pres_fixed);
     bme->pressure = (float)pres_fixed / 256.00;
 
     uint32_t humi_fixed = bme280_compensate_humi(bme, adc_humi, t_fine);
-    ESP_LOGD(TAG, "Read fixed humidity: %d", humi_fixed);
+    ESP_LOGD(TAG, "Read fixed humidity: %"PRIu32"", humi_fixed);
     bme->humidity = (float)humi_fixed / 1024.00;
 
     ESP_LOGI(TAG, "");
@@ -454,7 +454,7 @@ esp_err_t bme280_read_registers(bme280_dev_t *bme, uint8_t reg, void *data, size
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
     if (ret != ESP_OK)
     {
-        ESP_LOGE(TAG, "Error reading registers starting from register: 0x%02x, read size: %d", reg, size);
+        ESP_LOGE(TAG, "Error reading registers starting from register: 0x%02x, read size: %"PRIu16"", reg, size);
     }
     i2c_cmd_link_delete(cmd);
     return ret;
@@ -480,7 +480,7 @@ esp_err_t bme280_load_calib_data(bme280_dev_t *bme)
         ESP_LOGE(TAG, "Error reading calibration digit");
         return ret;
     }
-    ESP_LOGD(TAG, "DIG_T1: %d", bme->calib_data.dig_T1);
+    ESP_LOGD(TAG, "DIG_T1: %"PRIi16"", bme->calib_data.dig_T1);
 
     ret = bme280_read_cal_dig(bme, 0x8A, (uint16_t *)&bme->calib_data.dig_T2);
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
@@ -489,7 +489,7 @@ esp_err_t bme280_load_calib_data(bme280_dev_t *bme)
         ESP_LOGE(TAG, "Error reading calibration digit");
         return ret;
     }
-    ESP_LOGD(TAG, "DIG_T2: %d", bme->calib_data.dig_T2);
+    ESP_LOGD(TAG, "DIG_T2: %"PRIi16"", bme->calib_data.dig_T2);
 
     ret = bme280_read_cal_dig(bme, 0x8C, (uint16_t *)&bme->calib_data.dig_T3);
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
@@ -498,7 +498,7 @@ esp_err_t bme280_load_calib_data(bme280_dev_t *bme)
         ESP_LOGE(TAG, "Error reading calibration digit");
         return ret;
     }
-    ESP_LOGD(TAG, "DIG_T3: %d", bme->calib_data.dig_T3);
+    ESP_LOGD(TAG, "DIG_T3: %"PRIi16"", bme->calib_data.dig_T3);
 
     ret = bme280_read_cal_dig(bme, 0x8E, &bme->calib_data.dig_P1);
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
@@ -507,7 +507,7 @@ esp_err_t bme280_load_calib_data(bme280_dev_t *bme)
         ESP_LOGE(TAG, "Error reading calibration digit");
         return ret;
     }
-    ESP_LOGD(TAG, "DIG_P1: %d", bme->calib_data.dig_P1);
+    ESP_LOGD(TAG, "DIG_P1: %"PRIi16"", bme->calib_data.dig_P1);
 
     ret = bme280_read_cal_dig(bme, 0x90, (uint16_t *)&bme->calib_data.dig_P2);
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
@@ -516,7 +516,7 @@ esp_err_t bme280_load_calib_data(bme280_dev_t *bme)
         ESP_LOGE(TAG, "Error reading calibration digit");
         return ret;
     }
-    ESP_LOGD(TAG, "DIG_P2: %d", bme->calib_data.dig_P2);
+    ESP_LOGD(TAG, "DIG_P2: %"PRIi16"", bme->calib_data.dig_P2);
 
     ret = bme280_read_cal_dig(bme, 0x92, (uint16_t *)&bme->calib_data.dig_P3);
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
@@ -525,7 +525,7 @@ esp_err_t bme280_load_calib_data(bme280_dev_t *bme)
         ESP_LOGE(TAG, "Error reading calibration digit");
         return ret;
     }
-    ESP_LOGD(TAG, "DIG_P3: %d", bme->calib_data.dig_P3);
+    ESP_LOGD(TAG, "DIG_P3: %"PRIi16"", bme->calib_data.dig_P3);
 
     ret = bme280_read_cal_dig(bme, 0x94, (uint16_t *)&bme->calib_data.dig_P4);
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
@@ -534,7 +534,7 @@ esp_err_t bme280_load_calib_data(bme280_dev_t *bme)
         ESP_LOGE(TAG, "Error reading calibration digit");
         return ret;
     }
-    ESP_LOGD(TAG, "DIG_P4: %d", bme->calib_data.dig_P4);
+    ESP_LOGD(TAG, "DIG_P4: %"PRIi16"", bme->calib_data.dig_P4);
 
     ret = bme280_read_cal_dig(bme, 0x96, (uint16_t *)&bme->calib_data.dig_P5);
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
@@ -543,7 +543,7 @@ esp_err_t bme280_load_calib_data(bme280_dev_t *bme)
         ESP_LOGE(TAG, "Error reading calibration digit");
         return ret;
     }
-    ESP_LOGD(TAG, "DIG_P5: %d", bme->calib_data.dig_P5);
+    ESP_LOGD(TAG, "DIG_P5: %"PRIi16"", bme->calib_data.dig_P5);
 
     ret = bme280_read_cal_dig(bme, 0x98, (uint16_t *)&bme->calib_data.dig_P6);
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
@@ -552,7 +552,7 @@ esp_err_t bme280_load_calib_data(bme280_dev_t *bme)
         ESP_LOGE(TAG, "Error reading calibration digit");
         return ret;
     }
-    ESP_LOGD(TAG, "DIG_P6: %d", bme->calib_data.dig_P6);
+    ESP_LOGD(TAG, "DIG_P6: %"PRIu16"", bme->calib_data.dig_P6);
 
     ret = bme280_read_cal_dig(bme, 0x9A, (uint16_t *)&bme->calib_data.dig_P7);
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
@@ -561,7 +561,7 @@ esp_err_t bme280_load_calib_data(bme280_dev_t *bme)
         ESP_LOGE(TAG, "Error reading calibration digit");
         return ret;
     }
-    ESP_LOGD(TAG, "DIG_P7: %d", bme->calib_data.dig_P7);
+    ESP_LOGD(TAG, "DIG_P7: %"PRIi16"", bme->calib_data.dig_P7);
 
     ret = bme280_read_cal_dig(bme, 0x9C, (uint16_t *)&bme->calib_data.dig_P8);
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
@@ -570,7 +570,7 @@ esp_err_t bme280_load_calib_data(bme280_dev_t *bme)
         ESP_LOGE(TAG, "Error reading calibration digit");
         return ret;
     }
-    ESP_LOGD(TAG, "DIG_P8: %d", bme->calib_data.dig_P8);
+    ESP_LOGD(TAG, "DIG_P8: %"PRIi16"", bme->calib_data.dig_P8);
 
     ret = bme280_read_cal_dig(bme, 0x9E, (uint16_t *)&bme->calib_data.dig_P9);
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
@@ -579,7 +579,7 @@ esp_err_t bme280_load_calib_data(bme280_dev_t *bme)
         ESP_LOGE(TAG, "Error reading calibration digit");
         return ret;
     }
-    ESP_LOGD(TAG, "DIG_P9: %d", bme->calib_data.dig_P9);
+    ESP_LOGD(TAG, "DIG_P9: %"PRIi16"", bme->calib_data.dig_P9);
 
     ret = bme280_read_register(bme, 0xA1, &bme->calib_data.dig_H1);
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
@@ -588,7 +588,7 @@ esp_err_t bme280_load_calib_data(bme280_dev_t *bme)
         ESP_LOGE(TAG, "Error reading calibration digit");
         return ret;
     }
-    ESP_LOGD(TAG, "DIG_H1: %d", bme->calib_data.dig_H1);
+    ESP_LOGD(TAG, "DIG_H1: %"PRIi16"", bme->calib_data.dig_H1);
 
     ret = bme280_read_cal_dig(bme, 0xE1, (uint16_t *)&bme->calib_data.dig_H2);
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
@@ -597,7 +597,7 @@ esp_err_t bme280_load_calib_data(bme280_dev_t *bme)
         ESP_LOGE(TAG, "Error reading calibration digit");
         return ret;
     }
-    ESP_LOGD(TAG, "DIG_H2: %d", bme->calib_data.dig_H2);
+    ESP_LOGD(TAG, "DIG_H2: %"PRIi16"", bme->calib_data.dig_H2);
 
     ret = bme280_read_register(bme, 0xE3, &bme->calib_data.dig_H3);
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
@@ -606,7 +606,7 @@ esp_err_t bme280_load_calib_data(bme280_dev_t *bme)
         ESP_LOGE(TAG, "Error reading calibration digit");
         return ret;
     }
-    ESP_LOGD(TAG, "DIG_H3: %d", bme->calib_data.dig_H3);
+    ESP_LOGD(TAG, "DIG_H3: %"PRIi16"", bme->calib_data.dig_H3);
 
     uint8_t dig_h45[3] = {0, 0, 0};
     ret = bme280_read_registers(bme, 0xE4, &dig_h45, 3);
@@ -618,10 +618,10 @@ esp_err_t bme280_load_calib_data(bme280_dev_t *bme)
     }
 
     bme->calib_data.dig_H4 = (((uint16_t)dig_h45[0]) << 4) | (dig_h45[1] & 0x0F);
-    ESP_LOGD(TAG, "DIG_H4: %d", bme->calib_data.dig_H4);
+    ESP_LOGD(TAG, "DIG_H4: %"PRIi16"", bme->calib_data.dig_H4);
 
     bme->calib_data.dig_H5 = (((uint16_t)dig_h45[2]) << 4) | ((dig_h45[1] & 0xF0) >> 4);
-    ESP_LOGD(TAG, "DIG_H5: %d", bme->calib_data.dig_H5);
+    ESP_LOGD(TAG, "DIG_H5: %"PRIi16"", bme->calib_data.dig_H5);
 
     ret = bme280_read_register(bme, 0xE7, (uint8_t *)&bme->calib_data.dig_H6);
     ESP_ERROR_CHECK_WITHOUT_ABORT(ret);
@@ -630,7 +630,7 @@ esp_err_t bme280_load_calib_data(bme280_dev_t *bme)
         ESP_LOGE(TAG, "Error reading calibration digit");
         return ret;
     }
-    ESP_LOGD(TAG, "DIG_H6: %d", bme->calib_data.dig_H6);
+    ESP_LOGD(TAG, "DIG_H6: %"PRIi16"", bme->calib_data.dig_H6);
 
     return ESP_OK;
 }
